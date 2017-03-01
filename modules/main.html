@@ -1,0 +1,32 @@
+<div ui-view="main" class="app-pane">
+  <div ui-view="parts" class="sidebar-1">
+    <div v-for="item in parts" class="part-item">
+      <label>{{ item.id }}</label>
+    </div>
+  </div>
+  <div ui-view="sub-parts" class="sidebar-1">
+
+  </div>
+</div>
+
+<script>
+  var state = Scope.import('state');
+  var ProductModel = Scope.import('services/product-model.js');
+
+  var app = new Vue({
+    el: Scope.views['main'],
+    data: {
+      parts: [],
+      subParts: []
+    }
+  });
+
+  state.onStart = function () {
+    var product = new ProductModel(2);
+    console.log(product);
+    product.parts.observe(function (parts) {
+      app.parts = parts;
+    });
+  }
+
+</script>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="assets/style.css">
+
+  <script src="https://cdn.rawgit.com/GalaxyJS/galaxyjs.github.io/master/galaxyjs/galaxy-min.js"></script>
+  <script src="https://cdn.rawgit.com/GalaxyJS/galaxyjs.github.io/master/galaxyjs/galaxy-tags-min.js"></script>
+  <script src="https://vuejs.org/js/vue.js"></script>
+  <!--<script src="https://vuejs.org/js/vue.min.js"></script>-->
+  <script>
+    (function () {
+      window.addEventListener('load', run);
+
+      function run() {
+        Galaxy.boot({
+            url: 'modules/main.html'
+          },
+          function (module) {
+            Galaxy.ui.setContent('body', module.scope.html);
+            module.start();
+          });
+      }
+    })();
+  </script>
+</head>
+<body>
+Please wait...
+</body>
+</html>
