@@ -46,9 +46,12 @@
             }
 
             removedNode.__cag_ready = true;
+            var placeholder = new Comment();
+            item.target.insertBefore(placeholder, item.previousSibling);
             outNodes.push({
               parent: item.target,
-              node: removedNode
+              node: removedNode,
+              placeholder: placeholder
             });
           }
         });
@@ -129,7 +132,10 @@
     inNodes.forEach(function (item) {
       item.node.__cag_ready = true;
       if (item.parent) {
-        item.parent.removeChild(item.node);
+        item.placeholder = new Comment();
+        item.node.style.position = 'absolute';
+        item.node.style.visibility = 'hidden';
+        item.parent.replaceChild(item.placeholder, item.node);
       }
     });
 
@@ -140,7 +146,7 @@
     outNodes.forEach(function (item) {
       var element = item.node;
       GalaxyAnimation.disable(element);
-      item.parent.appendChild(element);
+      item.parent.replaceChild(element, item.placeholder);
       TweenLite.set(element, {
         className: '-=out'
       });
@@ -150,12 +156,14 @@
     inNodes.forEach(function (item) {
       var element = item.node;
       var parent = item.parent;
-      parent.appendChild(element);
+      parent.replaceChild(element, item.placeholder);
 
       TweenLite.set(element, {
         className: '+=out'
       });
       inTimeLineItems.push(TweenLite.to(element, GalaxyAnimation.CONFIG.baseDuration, {
+        // position: '',
+        // visibility: '',
         className: '-=out',
         ease: 'Power2.easeInOut',
         onComplete: function () {
@@ -175,6 +183,13 @@
             delete element.__cag_ready;
           });
         }
+      });
+    });
+
+    _this.timeline.add(function () {
+      Array.prototype.forEach.call(inNodes || [], function (item) {
+        item.node.style.position = '';
+        item.node.style.visibility = '';
       });
     });
 

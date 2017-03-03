@@ -49,6 +49,8 @@ ProductModel.prototype.getSubParts = function (part) {
 
   if (part.type === 'surfaces') {
     relationships = part.relationships.materials.data;
+  } else if (part.type === 'materials') {
+    relationships = part.relationships.colors.data;
   } else {
     relationships = part.relationships.choices.data;
   }
@@ -84,8 +86,17 @@ ProductModel.prototype.refresh = function () {
   apimer.getProduct(this._id, this.init.bind(this));
 };
 
-ProductModel.prototype.activeItem = function (part, subPart) {
-  var relationships = part.relationships.choices.data;
+ProductModel.prototype.activeItem = function (part, subPart, noRender) {
+  var _this = this;
+  var relationships = [];
+
+  if (part.type === 'surfaces') {
+    relationships = part.relationships.materials.data;
+  } else if (part.type === 'materials') {
+    relationships = part.relationships.colors.data;
+  } else {
+    relationships = part.relationships.choices.data;
+  }
 
   relationships.forEach(function (relation) {
     relation.selected = false;
@@ -94,7 +105,18 @@ ProductModel.prototype.activeItem = function (part, subPart) {
     }
   });
 
+  if (noRender) return;
+
   var setup = this.generateSetupObject(this.parts.data);
+
+  this.surfaces.data.forEach(function (surface) {
+    var materials = _this.getSubParts(surface);
+    var colors = _this.getSubParts(materials.selected);
+    if (colors.selected) {
+      setup[ surface.id + '||' + colors.selected.id ] = true;
+    }
+  });
+
   this.setSetup(setup);
 };
 

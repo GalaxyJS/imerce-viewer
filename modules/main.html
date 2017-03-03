@@ -1,4 +1,4 @@
-<div ui-view="main" class="app-pane">
+<galaxy-animation ui-view="main" class="app-pane" effects="galaxy.in-out" in-out-item="sidebar">
   <div ui-view="parts" class="sidebar sidebar-1">
     <h3>Parts</h3>
     <div v-for="item in parts" class="part-item"
@@ -14,24 +14,37 @@
       <label>{{ item.id }}</label>
     </div>
   </div>
+
   <galaxy-animation ui-view="sub-parts" class="sidebar sidebar-2" effects="galaxy.in-out" in-out-item="part-item"
-                    in-out-stagger=".03">
+                    in-out-stagger=".01">
+    <h3>{{ subNavsTitle }}</h3>
     <div v-for="item in subNavs" class="part-item"
-         v-bind:class="{'active': item === selectedSubPart}"
-         v-on:click="activeItem(item)">
+         v-bind:class="{'active': item === selectedSubNav}"
+         v-on:click="selectItem(item)">
       <label>{{ item.attributes.name }}</label>
+    </div>
+  </galaxy-animation>
+
+  <galaxy-animation v-if="isOnSurface()" class="sidebar sidebar-3" effects="galaxy.in-out"
+                    in-out-item="part-item"
+                    in-out-stagger=".01">
+    <h3>Colors</h3>
+    <div v-for="color in colors" class="part-item"
+         v-bind:class="{'active': color === selectedColor}"
+         v-on:click="activeColor(color)">
+      <label>{{ color.attributes.name }}</label>
     </div>
   </galaxy-animation>
 
   <galaxy-animation class="object-view" effects="galaxy.in-out" in-out-item="image">
     <img class="image" v-if="objectImageURL" v-bind:src="objectImageURL">
   </galaxy-animation>
-</div>
+</galaxy-animation>
 
 <script>
   var state = Scope.import('state');
   var ProductModel = Scope.import('services/product-model.js');
-  var product = new ProductModel(7);
+  var product = new ProductModel(2);
 
   var app = new Vue({
     el: Scope.views[ 'main' ],
@@ -45,11 +58,13 @@
       currentSetup: {},
       objectImageURL: null,
       selectedNav: null,
+      selectedSubNav: null,
       selectedPart: null,
       selectedSubPart: null,
       selectedSurface: null,
       selectedMaterial: null,
-      selectedColor: null
+      selectedColor: null,
+      subNavsTitle: ''
     },
     methods: {
       selectPart: function (part) {
@@ -60,26 +75,34 @@
         this.subParts = subPart.items;
         this.selectedSubPart = subPart.selected;
 
+        this.subNavsTitle = 'Choices';
         this.setSubNavs(this.subParts);
       },
       selectSurface: function (surface) {
         this.selectedSurface = surface;
         this.selectedNav = surface;
+        this.colors = [];
         var materials = product.getSubParts(surface);
 
         this.materials = materials.items;
-        this.selectedMaterial = materials.selected;
+        this.selectedSubNav = materials.selected;
 
+        this.subNavsTitle = 'Materials';
         this.setSubNavs(this.materials);
+
+        Vue.nextTick(function () {
+          app.selectMaterial(materials.selected);
+        });
       },
       selectMaterial: function (material) {
         this.selectedMaterial = material;
         var colors = product.getSubParts(material);
         this.colors = [];
-        debugger;
+
         Vue.nextTick(function () {
           app.colors = colors.items;
           app.selectedColor = colors.selected;
+          product.activeItem(app.selectedSurface, material, true);
         });
       },
       setSubNavs: function (list) {
@@ -88,9 +111,26 @@
           app.subNavs = list;
         });
       },
+      selectItem: function (item) {
+        if (item.type === 'materials') {
+          this.selectMaterial(item);
+        } else {
+          product.activeItem(this.selectedPart, item);
+        }
+
+        this.selectedSubNav = item;
+      },
       activeItem: function (subPart) {
         this.selectedSubPart = subPart;
         product.activeItem(this.selectedPart, subPart);
+      },
+      activeColor: function (color) {
+        this.selectedColor = color;
+        product.activeItem(this.selectedMaterial, color);
+      },
+      isOnSurface: function () {
+        if (this.selectedNav && this.selectedNav.type === 'surfaces') return true;
+        return false;
       }
     }
   });
