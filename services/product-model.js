@@ -3,10 +3,11 @@ var Observable = Scope.import('services/observable.js');
 
 Scope.export = ProductModel;
 
-function ProductModel (id) {
+function ProductModel(id) {
   var _this = this;
-  this._id = id;
-  this._data = [];
+  this.id = id;
+  this.data = [];
+  this.types = [];
   this.parts = new Observable();
   this.surfaces = new Observable();
   this.setup = new Observable();
@@ -16,74 +17,47 @@ function ProductModel (id) {
 }
 
 ProductModel.prototype.init = function (response) {
-  this._data = response ? response.data : {
-      data: {
-        default: []
-      },
-      included: []
-    };
-
-  this.initParts();
-  this.initSurfaces();
-
-  this.setSetup(this._data.data.default);
-};
-
-ProductModel.prototype.initParts = function () {
-  var _this = this;
-  _this.parts.set(_this._data.included.filter(function (item) {
-    return item.type === 'parts';
-  }));
-};
-
-ProductModel.prototype.initSurfaces = function () {
-  var _this = this;
-  _this.surfaces.set(_this._data.included.filter(function (item) {
-    return item.type === 'surfaces';
-  }));
-};
-
-ProductModel.prototype.getSubParts = function (part) {
-  var _this = this;
-  var relationships = [];
-
-  if (part.type === 'surfaces') {
-    relationships = part.relationships.materials.data;
-  } else if (part.type === 'materials') {
-    relationships = part.relationships.colors.data;
-  } else {
-    relationships = part.relationships.choices.data;
-  }
-
-  var result = {
-    items: [],
-    selected: null
+  this.data = response ? response.productData : {
+    data: []
   };
 
-  relationships.forEach(function (relation) {
-    var item = _this.findInInclude(relation);
-    result.items.push(item);
 
-    if (relation.selected) {
-      result.selected = item;
+  var dna = this.data.data[0];
+  this.types = this.extractAllTypes();
+
+  debugger;
+  // this.initParts();
+  // this.initSurfaces();
+  //
+  // this.setSetup(this._data.data.default);
+};
+
+ProductModel.prototype.extractAllTypes = function () {
+  var _this = this;
+  var data = _this.data.data[0];
+  var types = types = [];
+
+  data.data.forEach(function (item) {
+    if (types.indexOf(item.type) === -1) {
+      types.push(item.type);
     }
   });
 
-  return result;
+  return types;
 };
 
-ProductModel.prototype.findInInclude = function (item) {
-  if (this._data.included instanceof Array) {
-    return this._data.included.filter(function (asset) {
-      return asset.type === item.type && asset.id === item.id;
-    })[ 0 ];
-  }
+ProductModel.prototype.getNodesByType = function (type) {
+  var _this = this;
+  var data = _this.data.data[0];
+  var nodes = [];
 
-  return null;
+  nodes = data.data.filter(function (item) {
+    return item.type === type;
+  });
 };
 
 ProductModel.prototype.refresh = function () {
-  apimer.getProduct(this._id, this.init.bind(this));
+  apimer.getProduct(this.id).then(this.init.bind(this));
 };
 
 ProductModel.prototype.activeItem = function (part, subPart, noRender) {
@@ -113,7 +87,7 @@ ProductModel.prototype.activeItem = function (part, subPart, noRender) {
     var materials = _this.getSubParts(surface);
     var colors = _this.getSubParts(materials.selected);
     if (colors.selected) {
-      setup[ surface.id + '||' + colors.selected.id ] = true;
+      setup[surface.id + '||' + colors.selected.id] = true;
     }
   });
 
@@ -126,7 +100,7 @@ ProductModel.prototype.generateSetupObject = function (parts) {
 
   parts.forEach(function (part) {
     var subPart = _this.getSubParts(part);
-    setup[ subPart.selected.id ] = true;
+    setup[subPart.selected.id] = true;
   });
 
   return setup;
@@ -136,7 +110,7 @@ ProductModel.prototype.setSetup = function (setup) {
   var _this = this;
   _this.setup = setup;
 
-  apimer.renderProduct(_this._id, _this.setup, function (response) {
-    _this.imageURL.set(response[ 0 ] || null);
+  apimer.renderProduct(_this.id, _this.setup).then(function (response) {
+    // _this.imageURL.set(response[ 0 ] || null);
   });
 };
