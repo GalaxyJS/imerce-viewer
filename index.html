@@ -3,31 +3,27 @@
 <head>
   <link href="assets/style.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Nunito:300,400,600,700" rel="stylesheet">
-
-  <script src="https://rawgit.com/GalaxyJS/galaxyjs.github.io/master/galaxyjs/galaxy-min.js"></script>
-  <script src="https://rawgit.com/GalaxyJS/galaxyjs.github.io/master/galaxyjs/galaxy-tags-min.js"></script>
+  <script src="https://gitcdn.xyz/repo/GalaxyJS/galaxyjs.github.io/wip/galaxyjs/galaxy.js"></script>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/TweenLite.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/TimelineLite.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/easing/EasePack.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/plugins/CSSPlugin.min.js"></script>
-
-  <script src="assets/animation-effects/in-out.js"></script>
-
-  <script src="https://vuejs.org/js/vue.js"></script>
-  <!--<script src="https://vuejs.org/js/vue.min.js"></script>-->
   <script>
     (function () {
+      // This will ensure that you boot Galaxy when everything is loaded
+      // If you are using JQuery, you can also use $(document).ready(run);
       window.addEventListener('load', run);
 
-      function run () {
+      function run() {
         Galaxy.boot({
-            url: 'modules/main.html'
-          },
-          function (module) {
-            Galaxy.ui.setContent('body', module.scope.html);
-            module.start();
-          });
+          // The path to your main module file
+          url: 'modules/main/index.js',
+          // The container element for your app
+          element: document.getElementById('body')
+        }).then(function (module) {
+          module.start();
+        });
       }
     })();
   </script>

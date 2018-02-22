@@ -1,0 +1,22 @@
+{
+  "name": "imerce-viewer",
+  "version": "0.9.0",
+  "description": "An proof of concept for configurator made with GalaxyJS",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GalaxyJS/imerce-viewer.git"
+  },
+  "author": "Eeliya Rasta",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/GalaxyJS/imerce-viewer/issues"
+  },
+  "homepage": "https://github.com/GalaxyJS/imerce-viewer#readme",
+  "devDependencies": {
+    "eslint": "^4.18.1"
+  }
+}
