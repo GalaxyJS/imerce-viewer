@@ -3,7 +3,9 @@
 <head>
   <link href="assets/style.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Nunito:300,400,600,700" rel="stylesheet">
-  <script src="https://gitcdn.xyz/repo/GalaxyJS/galaxyjs.github.io/wip/galaxyjs/galaxy.js"></script>
+  <!--<script src="https://gitcdn.xyz/repo/GalaxyJS/galaxyjs.github.io/wip/galaxyjs/galaxy.js"></script>-->
+
+  <script src="assets/galaxy.js"></script>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/TweenLite.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/TimelineLite.min.js"></script>
@@ -20,7 +22,7 @@
           // The path to your main module file
           url: 'modules/main/index.js',
           // The container element for your app
-          element: document.getElementById('body')
+          element: document.querySelector('body')
         }).then(function (module) {
           module.start();
         });
