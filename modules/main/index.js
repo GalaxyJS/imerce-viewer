@@ -15,30 +15,55 @@ fetch('https://integrated-configurator-clientapi-accept.3dimerce.mybit.nl/bertpl
 console.info(Scope.data.productModel);
 
 view.config.cleanContainer = true;
-view.init([
-  {
-    tag: 'main',
-    text: [
-      'data.productModel',
-      function (model, id) {
-        return JSON.stringify(model.groups, null, 2);
-        // return null;
-      }
-    ]
-  },
-  {
-    tag: 'footer',
-    children: [
-      {
-        class: 'choice-bar'
-      },
-      {
-        class: 'option-bar'
-      },
-      {
-        class: 'group-bar'
-      }
-    ]
-  }
+view.init({
+  class: 'interface',
+  children: [
+    {
+      tag: 'main'
+      // text: [
+      //   'data.productModel',
+      //   function (model, id) {
+      //     return JSON.stringify(model.groups, null, 2);
+      //     // return null;
+      //   }
+      // ]
+    },
+    {
+      tag: 'footer',
+      children: [
+        {
+          class: 'choice-bar'
+        },
+        {
+          class: 'options-bar',
+          module: {
+            url: 'modules/options-bar/index.js'
+          },
+          inputs: {
+            group: '<>data.productModel.activeGroup'
+          },
+          on: {
+            // 'group-select': groupSelect
+          }
+        },
+        {
+          class: 'groups-bar',
+          module: {
+            url: 'modules/groups-bar/index.js'
+          },
+          inputs: {
+            data: '<>data.productModel.groups'
+          },
+          on: {
+            'group-select': groupSelect
+          }
+        }
+      ]
+    }
 
-]);
+  ]
+});
+
+function groupSelect(event) {
+  Scope.data.productModel.setActiveGroupById(event.detail.groupId);
+}

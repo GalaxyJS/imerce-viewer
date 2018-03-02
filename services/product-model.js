@@ -67,4 +67,9 @@ ProductModel.prototype.populateAppData = function () {
   this.groups = groups;
 };
 
+ProductModel.prototype.setActiveGroupById = function (id) {
+  this.activeGroup = this.groups.filter(function (group) {
+    return group.id === id;
+  })[0] || null;
+};
 
