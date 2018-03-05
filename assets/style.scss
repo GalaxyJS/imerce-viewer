@@ -55,11 +55,11 @@ table {
 
 /* End of CSS reset */
 
-//@import url('https://fonts.googleapis.com/css?family=Josefin+Sans:300,400,600,700');
+@import url('https://fonts.googleapis.com/css?family=Josefin+Sans:300,400,600,700');
 
 * {
   box-sizing: border-box;
-  //font-family: 'Josefin Sans', sans-serif;
+  font-family: 'Josefin Sans', sans-serif;
 }
 
 html, body {
@@ -98,6 +98,8 @@ footer {
   overflow: hidden;
   max-width: 1000px;
   background-color: #fff;
+  display: flex;
+  flex-direction: column;
 
   > div {
     padding: 10px 0;
@@ -112,8 +114,10 @@ footer {
   }
 }
 
-.groups-bar {
+.title-items-bar {
   display: flex;
+  flex: 1 0 auto;
+  border-bottom: 1px solid #aaa;
 
   > ul {
     list-style: none;
@@ -149,10 +153,21 @@ footer {
       }
     }
   }
+
+  &:last-of-type {
+    border-top: none;
+  }
 }
 
-.options-bar {
-  border-bottom: 1px solid #aaa;
+.title-items-bar.small-bold {
+  > ul {
+    button {
+      font-size: 14px;
+      line-height: 18px;
+      padding: 10px 20px;
+      font-weight: 600;
+    }
+  }
 }
 
 .choice-bar {

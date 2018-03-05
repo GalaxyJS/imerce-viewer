@@ -3,8 +3,7 @@
 Scope.import('galaxy/inputs');
 const view = Scope.import('galaxy/view');
 
-Scope.data.activeOptionId = null;
-console.info(Scope.inputs)
+Scope.data.activeChoiceId = null;
 
 view.init([
   {
@@ -12,33 +11,33 @@ view.init([
     children: {
       tag: 'li',
       $for: {
-        data: '<>inputs.agroup.data',
-        as: 'option'
+        data: '<>inputs.option.choices',
+        as: 'choice'
       },
       children: [
         {
           tag: 'button',
-          text: '<>option.id',
+          text: '<>choice.id',
           inputs: {
-            optionId: '<>option.id'
+            choiceId: '<>choice.id'
           },
           class: {
             active: [
-              'option.id',
-              'data.activeOptionId',
-              function (id, activeOptionId) {
-                return id === activeOptionId;
+              'choice.id',
+              'data.activeChoiceId',
+              function (id, activeChoiceId) {
+                return id === activeChoiceId;
               }
             ]
           },
           on: {
             click: function () {
-              Scope.data.activeOptionId = this.inputs.optionId;
+              Scope.data.activeChoiceId = this.inputs.choiceId;
 
-              const event = new CustomEvent('option-select', {
+              const event = new CustomEvent('choice-select', {
                 // bubbles: true,
                 detail: {
-                  optionId: Scope.data.activeOptionId
+                  groupId: Scope.data.activeChoiceId
                 }
               });
               view.broadcast(event);

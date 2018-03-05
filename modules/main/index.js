@@ -31,23 +31,32 @@ view.init({
     {
       tag: 'footer',
       children: [
+        // {
+        //   class: 'title-items-bar',
+        //   module: {
+        //     url: 'modules/choices-bar/index.js'
+        //   },
+        //   inputs: {
+        //     option: '<>data.productModel.activeOption'
+        //   },
+        //   on: {
+        //     // 'group-select': groupSelect
+        //   }
+        // },
         {
-          class: 'choice-bar'
-        },
-        {
-          class: 'options-bar',
+          class: 'title-items-bar small-bold',
           module: {
             url: 'modules/options-bar/index.js'
           },
           inputs: {
-            group: '<>data.productModel.activeGroup'
+            agroup: '<>data.productModel.activeGroup'
           },
           on: {
-            // 'group-select': groupSelect
+            'option-select': optionSelect
           }
         },
         {
-          class: 'groups-bar',
+          class: 'title-items-bar',
           module: {
             url: 'modules/groups-bar/index.js'
           },
@@ -65,5 +74,14 @@ view.init({
 });
 
 function groupSelect(event) {
-  Scope.data.productModel.setActiveGroupById(event.detail.groupId);
+  // if (Scope.data.productModel.activeGroup)
+  if (Scope.data.productModel.activeGroup && Scope.data.productModel.activeGroup.id)
+    Scope.data.productModel.setActiveGroupById(null);
+  else
+    Scope.data.productModel.setActiveGroupById(event.detail.groupId);
+}
+
+function optionSelect(event) {
+  // Scope.data.productModel.setActiveOptionById(null);
+  Scope.data.productModel.setActiveOptionById(event.detail.optionId);
 }

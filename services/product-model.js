@@ -1,8 +1,8 @@
 Scope.exports = ProductModel;
 
 function ProductModel() {
-  this.activeGroup = {};
-  this.activeOption = {};
+  this.activeGroup = {data: []};
+  this.activeOption = null;
   this.activeChoice = {};
   this.activeCamera = {};
   this.groupsSubject = {};
@@ -69,6 +69,16 @@ ProductModel.prototype.populateAppData = function () {
 
 ProductModel.prototype.setActiveGroupById = function (id) {
   this.activeGroup = this.groups.filter(function (group) {
+    return group.id === id;
+  })[0] || null;
+};
+
+ProductModel.prototype.setActiveOptionById = function (id) {
+  if (!this.activeGroup || !this.activeGroup.data) {
+    return;
+  }
+
+  this.activeOption = this.activeGroup.data.filter(function (group) {
     return group.id === id;
   })[0] || null;
 };
