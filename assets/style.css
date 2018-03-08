@@ -99,7 +99,8 @@ footer {
   .title-items-bar > ul {
     list-style: none;
     display: flex;
-    flex-direction: row; }
+    flex-direction: row;
+    overflow: hidden; }
     .title-items-bar > ul button {
       font-size: 16px;
       line-height: 20px;

@@ -1,7 +1,7 @@
 Scope.exports = ProductModel;
 
 function ProductModel() {
-  this.activeGroup = {data: []};
+  this.activeGroup = null;
   this.activeOption = null;
   this.activeChoice = {};
   this.activeCamera = {};

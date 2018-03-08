@@ -9,25 +9,42 @@ console.info(Scope.inputs)
 view.init([
   {
     tag: 'ul',
+    animations: {
+      enter: {
+        from: {
+          height: 0
+        },
+        to: {
+          height: 38
+        },
+        duration: 1
+      }
+    },
+    $if: [
+      'inputs.group',
+      function (ao) {
+        return ao ? ao.data.length : false;
+      }
+    ],
     children: {
       tag: 'li',
       $for: {
-        data: '<>inputs.agroup.data',
+        data: '<>inputs.group.data',
         as: 'option'
       },
       children: [
         {
           tag: 'button',
-          text: '<>option.id',
+          text: new String('<>option.id'),
           inputs: {
             optionId: '<>option.id'
           },
           class: {
             active: [
               'option.id',
-              'data.activeOptionId',
-              function (id, activeOptionId) {
-                return id === activeOptionId;
+              'inputs.activeOption',
+              function (id, activeOption) {
+                return activeOption ? id === activeOption.id : false;
               }
             ]
           },
