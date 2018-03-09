@@ -20,12 +20,12 @@ view.init([
         duration: 1
       }
     },
-    $if: [
-      'inputs.group',
-      function (ao) {
-        return ao ? ao.data.length : false;
-      }
-    ],
+    // $if: [
+    //   'inputs.group',
+    //   function (ao) {
+    //     return ao ? ao.data.length : false;
+    //   }
+    // ],
     children: {
       tag: 'li',
       $for: {
@@ -35,7 +35,7 @@ view.init([
       children: [
         {
           tag: 'button',
-          text: new String('<>option.id'),
+          text: '<>option.id',
           inputs: {
             optionId: '<>option.id'
           },
