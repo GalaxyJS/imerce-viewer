@@ -49,8 +49,8 @@ view.init({
             url: 'modules/options-bar/index.js'
           },
           inputs: {
-            group: '<>data.productModel.activeGroup',
-            activeOption: '<>data.productModel.activeOption'
+            agroup: '<>data.productModel.activeGroup',
+            activeOptionId: '<>data.productModel.activeOption.id'
             // activeOption:
           },
           on: {
@@ -63,7 +63,8 @@ view.init({
             url: 'modules/groups-bar/index.js'
           },
           inputs: {
-            data: '<>data.productModel.groups'
+            data: '<>data.productModel.groups',
+            activeGroup: '<>data.productModel.activeGroup.id'
           },
           on: {
             'group-select': groupSelect
@@ -76,8 +77,12 @@ view.init({
 });
 
 function groupSelect(event) {
-  Scope.data.productModel.setActiveOptionById(null);
-  Scope.data.productModel.setActiveGroupById(event.detail.groupId);
+  const activeGroup = Scope.data.productModel.activeGroup;
+  if (activeGroup && activeGroup.id === event.detail.groupId) {
+    Scope.data.productModel.setActiveGroupById(null);
+  } else {
+    Scope.data.productModel.setActiveGroupById(event.detail.groupId);
+  }
 }
 
 function optionSelect(event) {

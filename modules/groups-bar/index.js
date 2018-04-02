@@ -2,12 +2,16 @@
 
 Scope.import('galaxy/inputs');
 const view = Scope.import('galaxy/view');
+const animations = Scope.import('/imerce-viewer/services/animations.js');
+const utils = Scope.import('/imerce-viewer/services/utils.js');
 
 Scope.data.activeGroupId = null;
 
 view.init([
   {
     tag: 'ul',
+    animations: animations.barAnimation,
+    $if: utils.whenListIsNotEmpty('inputs.data'),
     children: {
       tag: 'li',
       $for: {
@@ -16,17 +20,17 @@ view.init([
       },
       children: [
         {
-          tag: 'button',
-          text: '<>group.id',
           inputs: {
             groupId: '<>group.id'
           },
+          tag: 'button',
+          text: '<>group.id',
           class: {
             active: [
               'group.id',
-              'data.activeGroupId',
-              function (id, activeGroupId) {
-                return id === activeGroupId;
+              'inputs.activeGroup',
+              function (id, activeGroup) {
+                return id === activeGroup;
               }
             ]
           },
