@@ -11,7 +11,7 @@ view.init([
   {
     tag: 'ul',
     animations: animations.barAnimation,
-    $if: utils.whenListIsNotEmpty('inputs.agroup.data'),
+    $if: utils.whenListIsNotEmpty('inputs.option.choices'),
     children: {
       tag: 'li',
       $for: {

@@ -6,7 +6,6 @@ const animations = Scope.import('/imerce-viewer/services/animations.js');
 const utils = Scope.import('/imerce-viewer/services/utils.js');
 
 Scope.data.activeOptionId = null;
-console.info('ob', Scope.inputs);
 
 view.init([
   {
@@ -15,6 +14,9 @@ view.init([
     $if: utils.whenListIsNotEmpty('inputs.agroup.data'),
     children: {
       tag: 'li',
+      renderConfig: {
+        domManipulationOrder: 'cascade'
+      },
       animations: {
         enter: {
           parent: 'bar',
@@ -25,19 +27,19 @@ view.init([
           to: {
             y: 0
           },
-          position: '-=.1',
+          position: '-=.24',
           chainToParent: true,
           duration: .3
         },
         leave: {
           sequence: 'list-item',
           to: {
-            y: -38
+            y: 38
           },
-          position: '-=.1',
+          position: '-=.14',
           chainToParent: true,
           duration: .2
-        },
+        }
       },
       $for: {
         data: '<>inputs.agroup.data',
