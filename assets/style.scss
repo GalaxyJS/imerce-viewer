@@ -55,26 +55,31 @@ table {
 
 /* End of CSS reset */
 
-@import url('https://fonts.googleapis.com/css?family=Josefin+Sans:300,400,600,700');
+@import url('https://fonts.googleapis.com/css?family=Montserrat:300,400,500,700');
 
 * {
   box-sizing: border-box;
-  font-family: 'Josefin Sans', sans-serif;
+  font-family: 'Montserrat', sans-serif;
 }
 
 html, body {
+  font-family: 'Montserrat', sans-serif;
   position: relative;
   width: 100%;
   height: 100%;
   font-size: 16px;
   color: #000;
+  background-color: antiquewhite;
 }
+
+// globals
 
 button {
   background-color: #aaa;
   border: none;
 }
 
+// App
 .interface {
   display: flex;
   flex-direction: column;
@@ -84,46 +89,56 @@ button {
 }
 
 main {
-  flex: 1 0 auto;
+  display: block;
+  width: calc(60% - 80px);
+  height: 100%;
+  position: relative;
 }
 
-footer {
+.control-panel {
   position: absolute;
+  top: 0;
   bottom: 0;
-  left: calc((100% - 1000px) / 2);
-  width: 100%;
-  margin: 20px;
+  right: 0;
+  width: 40%;
+  height: 100%;
+  margin: 0;
   padding: 0 10px;
-  box-shadow: 0 5px 20px rgba(#000, .2);
   overflow: hidden;
-  max-width: 1000px;
-  background-color: #fff;
   display: flex;
   flex-direction: column;
 
-  > div {
-    padding: 10px 0;
-  }
+}
 
-  > *:first-of-type {
-    padding-top: 10px;
-  }
+.active-section-title {
+  font-size: 60px;
+  line-height: 66px;
+  text-transform: capitalize;
+  margin: 0;
+  opacity: .9;
+  font-weight: bold;
+  padding: 0 15px;
+}
 
-  > *:last-of-type {
-    padding-bottom: 10px;
+.section-content {
+  overflow: auto;
+  flex: 1 0 auto;
+
+  > h2:first-child {
+    margin-top: 100px;
   }
 }
 
 .title-items-bar {
   display: flex;
-  flex: 1 0 auto;
-  border-bottom: 1px solid #aaa;
+  flex: 0 0 auto;
 
   > ul {
     list-style: none;
     display: flex;
     flex-direction: row;
     overflow: hidden;
+    margin: 20px 0;
 
     > li {
 
@@ -131,14 +146,16 @@ footer {
 
     button {
       font-size: 16px;
-      line-height: 20px;
-      background-color: #fff;
-      padding: 15px 20px;
+      line-height: 30px;
+      font-weight: bold;
+      background-color: transparent;
+      padding: 15px;
       cursor: pointer;
       outline: none;
       box-shadow: inset 0 0 0 0 #555;
       transition: all .1s ease-out;
-      text-transform: uppercase;
+      text-transform: capitalize;
+      color: rgba(black, .5);
 
       &:hover {
         background-color: rgba(#28a, .08);
@@ -146,11 +163,13 @@ footer {
 
       &:active {
         box-shadow: inset 0 0 0 5px #555;
+
       }
 
       &.active {
-        color: #fff;
-        box-shadow: inset 0 0 0 25px #555;
+        color: rgba(black, .9);
+        font-size: 26px;
+        //box-shadow: inset 0 0 0 25px #555;
       }
     }
   }
@@ -173,4 +192,22 @@ footer {
 
 .choice-bar {
 
+}
+
+.view {
+  display: block;
+  width: calc(100% - 40px);
+  height: calc(100% - 40px);
+  margin: 20px;
+  overflow: hidden;
+  position: relative;
+
+  > .image {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
 }

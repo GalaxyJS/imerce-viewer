@@ -30,6 +30,7 @@ view.init([
               'group.id',
               'inputs.activeGroup',
               function (id, activeGroup) {
+                console.info(id, activeGroup);
                 return id === activeGroup;
               }
             ]

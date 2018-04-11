@@ -12,6 +12,8 @@ fetch('https://integrated-configurator-clientapi-accept.3dimerce.mybit.nl/bertpl
   });
 });
 
+Scope.data.setup = {};
+
 console.info(Scope.data.productModel);
 
 view.config.cleanContainer = true;
@@ -19,44 +21,23 @@ view.init({
   class: 'interface',
   children: [
     {
-      tag: 'main'
-      // text: [
-      //   'data.productModel',
-      //   function (model, id) {
-      //     return JSON.stringify(model.groups, null, 2);
-      //     // return null;
-      //   }
-      // ]
-    },
-    {
-      tag: 'footer',
+      tag: 'main',
       children: [
         {
-          class: 'title-items-bar',
-          module: {
-            url: 'modules/choices-bar/index.js'
-          },
+          class: 'view',
           inputs: {
-            option: '<>data.productModel.activeOption'
+            setup: '<>data.setup'
           },
-          on: {
-            // 'group-select': groupSelect
-          }
-        },
-        {
-          class: 'title-items-bar small-bold',
           module: {
-            url: 'modules/options-bar/index.js'
-          },
-          inputs: {
-            agroup: '<>data.productModel.activeGroup',
-            activeOptionId: '<>data.productModel.activeOption.id'
-            // activeOption:
-          },
-          on: {
-            'option-select': optionSelect
+            url: 'modules/view/index.js'
           }
-        },
+        }
+      ]
+    },
+    {
+      tag: 'div',
+      class: 'control-panel',
+      children: [
         {
           class: 'title-items-bar',
           module: {
@@ -69,6 +50,30 @@ view.init({
           on: {
             'group-select': groupSelect
           }
+        },
+        {
+          tag: 'section',
+          class: 'section-content',
+          children: [
+            {
+              tag: 'h2',
+              class: 'active-section-title',
+              text: '<>data.productModel.activeGroup.id'
+            },
+            {
+              class: 'title-items-bar small-bold',
+              module: {
+                url: 'modules/options-bar/index.js'
+              },
+              inputs: {
+                agroup: '<>data.productModel.activeGroup',
+                activeOptionId: '<>data.productModel.activeOption.id'
+              },
+              on: {
+                'option-select': optionSelect
+              }
+            }
+          ]
         }
       ]
     }
