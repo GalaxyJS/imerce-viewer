@@ -22,7 +22,26 @@ Scope.exports = {
       to: {
         height: 0
       },
+      duration: 1.3
+    }
+  },
+  groupsAnimation: {
+    enter: {
+      sequence: 'groups',
+      from: {
+        scale: 0
+      },
+      to: {
+        scale: 1
+      },
+      position: '-=.25',
       duration: .3
+    },
+    leave: {
+      to: {
+        scale: 0
+      },
+      duration: .2
     }
   }
 };

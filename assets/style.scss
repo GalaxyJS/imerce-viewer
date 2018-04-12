@@ -55,7 +55,7 @@ table {
 
 /* End of CSS reset */
 
-@import url('https://fonts.googleapis.com/css?family=Montserrat:300,400,500,700');
+@import url('https://fonts.googleapis.com/css?family=Montserrat:200,300,400,500,700');
 
 * {
   box-sizing: border-box;
@@ -69,7 +69,6 @@ html, body {
   height: 100%;
   font-size: 16px;
   color: #000;
-  background-color: antiquewhite;
 }
 
 // globals
@@ -103,7 +102,7 @@ main {
   width: 40%;
   height: 100%;
   margin: 0;
-  padding: 0 10px;
+  padding: 0;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -118,14 +117,15 @@ main {
   opacity: .9;
   font-weight: bold;
   padding: 0 15px;
+  overflow: hidden;
 }
 
 .section-content {
   overflow: auto;
-  flex: 1 0 auto;
+  flex: 1 1 auto;
 
   > h2:first-child {
-    margin-top: 100px;
+    margin-top: 90px;
   }
 }
 
@@ -137,7 +137,7 @@ main {
     list-style: none;
     display: flex;
     flex-direction: row;
-    overflow: hidden;
+    overflow: auto;
     margin: 20px 0;
 
     > li {
@@ -176,6 +176,48 @@ main {
 
   &:last-of-type {
     border-bottom: none;
+  }
+}
+
+.options-list {
+
+}
+
+.option-item {
+  padding: 0 15px;
+
+  > h3 {
+    margin: 45px 0 15px;
+    font-size: 28px;
+    font-weight: 200;
+    text-transform: capitalize;
+  }
+
+  > section {
+
+  }
+}
+
+.choice-item {
+  //padding: 10px;
+  margin-bottom: 0;
+
+  > button {
+    line-height: 20px;
+    font-size: 15px;
+    padding: 10px;
+    margin: 0 -10px;
+    background-color: transparent;
+    cursor: pointer;
+    text-transform: capitalize;
+
+    &:hover {
+      background-color: rgba(#28a, .08);
+    }
+
+    &.active {
+      font-weight: bold;
+    }
   }
 }
 
