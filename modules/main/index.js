@@ -158,6 +158,7 @@ view.init({
                 url: 'modules/options-bar/index.js'
               },
               inputs: {
+                blacklist: '<>data.productModel.blacklist',
                 setup: '<>data.productModel.setup',
                 group: '<>data.productModel.activeGroup'
               },
@@ -193,11 +194,12 @@ function choiceSelect(event) {
 
   verifySetup(newSetup).then(function (data) {
     Scope.data.productModel.blacklist = data.blacklist;
+
     Scope.data.productModel.setup = data.setup;
     const mainView = view.container.querySelector('#main-view');
 
     const url = getImageURL(newSetup, mainView.offsetWidth, mainView.offsetHeight);
-    Scope.data.imageURL = 'url("' + url + '")';
+    Scope.data.imageURL =  url ;
   });
 
 }

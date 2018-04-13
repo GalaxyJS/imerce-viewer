@@ -17,8 +17,9 @@ observer.on('setup', function () {
   Scope.data.setupTimestamp = new Date().getTime();
 });
 
-observer.on('group', function () {
+observer.on('blacklist', function () {
   arguments;
+  // debugger;
 });
 
 view.init([
@@ -58,7 +59,29 @@ view.init([
         }
       },
       $for: {
-        data: '<>inputs.group.data',
+        data: [
+          'inputs.group.data',
+          function (data) {
+            if (data && data.original) {
+              data.params = data.original.filter(function (item) {
+                return !inputs.blacklist.hasOwnProperty('option:' + item.id);
+              });
+
+              // const newListId = data.params.reduce(function (all, item) {
+              //   return all + item.id;
+              // }, '');
+              //
+              // if (this.data.listId === newListId) {
+              //   console.info('ignore');
+              //   return {};
+              // }
+              //
+              // this.data.listId = newListId;
+            }
+
+            return data;
+          }
+        ],
         as: 'option'
       },
       children: [
@@ -71,8 +94,57 @@ view.init([
           children: [
             {
               class: 'choice-item',
+              animations: {
+                config: {
+                  leaveWithParent: true,
+                  enterWithParent: true
+                },
+                enter: {
+                  parent: 'test',
+                  from: {
+                    x: 30,
+                    opacity: 0
+                  },
+                  to: {
+                    x: 0,
+                    opacity: 1
+                  },
+                  duration: .3
+                },
+                leave: {
+                  parent: 'test',
+                  to: {
+                    opacity: 0,
+                    x: -30
+                  },
+                  duration: .3
+                }
+              },
               $for: {
-                data: '<>option.choices',
+                data: [
+                  'option.choices',
+                  'option.id',
+                  'inputs.blacklist',
+                  function (data, id) {
+                    if (data && data.original) {
+                      data.params = data.original.filter(function (item) {
+                        return !inputs.blacklist.hasOwnProperty('choice:' + id + '+' + item.id);
+                      });
+
+                      const newListId = data.params.reduce(function (all, item) {
+                        return all + item.id;
+                      }, '');
+
+                      if (this.data.listId === newListId) {
+                        return {};
+                      }
+
+                      this.data.listId = newListId;
+                    }
+
+                    return data;
+                  }
+                ],
                 as: 'choice'
               },
               children: [
