@@ -87,7 +87,7 @@ button {
   position: relative;
 }
 
-main {
+.view-panel {
   display: block;
   width: calc(60% - 80px);
   height: 100%;
@@ -125,22 +125,26 @@ main {
   flex: 1 1 auto;
 
   > h2:first-child {
-    margin-top: 90px;
+    margin-top: 1.5em;
   }
 }
 
 .title-items-bar {
   display: flex;
   flex: 0 0 auto;
+  overflow: hidden;
+  height: 100px;
 
   > ul {
     list-style: none;
     display: flex;
     flex-direction: row;
-    margin: 20px 0;
+    padding: 20px 0;
+    overflow: auto;
+    margin-bottom: -20px;
 
     > li {
-
+      display: inline-block;
     }
 
     button {
@@ -183,6 +187,7 @@ main {
 }
 
 .option-item {
+  display: block;
   padding: 0 15px;
 
   > h3 {
@@ -193,29 +198,81 @@ main {
   }
 
   > section {
+    position: relative;
+  }
+}
 
+.active-state {
+  width: 102px;
+  height: 127px;
+  position: absolute;
+  border: 2px solid #ec6602;
+  margin: -1px;
+  transition: all .3s ease-out;
+  z-index: 3;
+  will-change: top, left;
+  pointer-events: none;
+  opacity: .5;
+
+  &[data-position='hide'] {
+    opacity: 0;
+    transition: none;
   }
 }
 
 .choice-item {
-  //padding: 10px;
-  margin-bottom: 0;
+  background-color: #fff;
+  display: inline-block;
+  width: 100px;
+  height: 125px;
+  box-shadow: 0 3px 6px rgba(#000, .1);
+  margin-right: 15px;
+  margin-bottom: 15px;
+  position: relative;
+  transition: box-shadow .2s linear, border .2s linear;
+  border: 1px solid transparent;
+  z-index: 1;
+  overflow: hidden;
+  cursor: default;
 
-  > button {
-    line-height: 20px;
-    font-size: 15px;
-    padding: 10px;
-    margin: 0 -10px;
-    background-color: transparent;
+  &:not(.active) {
     cursor: pointer;
+  }
+
+  > label {
+    line-height: 20px;
+    font-size: 14px;
+    padding: 0 5px 5px;
+    background-color: transparent;
     text-transform: capitalize;
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    z-index: 3;
+    overflow: hidden;
+    cursor: inherit;
+    font-weight: 400;
+    text-overflow: ellipsis;
+    opacity: .6;
+  }
 
-    &:hover {
-      background-color: rgba(#28a, .08);
-    }
+  > .icon {
+    background-size: contain;
+    background-repeat: no-repeat;
+    position: absolute;
+    width: 100%;
+    height: 100px;
+  }
 
-    &.active {
-      font-weight: bold;
+  &:hover:not(.active) {
+    border-color: #888;
+  }
+
+  &.active {
+    box-shadow: 0 9px 20px rgba(#000, .2);
+
+    > label {
+      opacity: 1;
     }
   }
 }
@@ -237,9 +294,9 @@ main {
 
 .view {
   display: block;
-  width: calc(100% - 40px);
-  height: calc(100% - 40px);
-  margin: 20px;
+  width: 100%;
+  height: 100%;
+  margin: 0;
   overflow: hidden;
   position: relative;
 
@@ -250,5 +307,122 @@ main {
     background-position: center center;
     background-repeat: no-repeat;
     background-size: contain;
+  }
+}
+
+/*
+ * Container style
+ */
+.ps {
+  overflow: hidden !important;
+  overflow-anchor: none;
+  -ms-overflow-style: none;
+  touch-action: auto;
+  -ms-touch-action: auto;
+}
+
+/*
+ * Scrollbar rail styles
+ */
+.ps__rail-x {
+  display: none;
+  opacity: 0;
+  transition: background-color .2s linear, opacity .2s linear;
+  -webkit-transition: background-color .2s linear, opacity .2s linear;
+  height: 15px;
+  /* there must be 'bottom' or 'top' for ps__rail-x */
+  bottom: 0px;
+  /* please don't change 'position' */
+  position: absolute;
+}
+
+.ps__rail-y {
+  display: none;
+  opacity: 0;
+  transition: background-color .2s linear, opacity .2s linear;
+  -webkit-transition: background-color .2s linear, opacity .2s linear;
+  width: 15px;
+  /* there must be 'right' or 'left' for ps__rail-y */
+  right: 0;
+  /* please don't change 'position' */
+  position: absolute;
+}
+
+.ps--active-x > .ps__rail-x,
+.ps--active-y > .ps__rail-y {
+  display: block;
+  background-color: transparent;
+}
+
+.ps:hover > .ps__rail-x,
+.ps:hover > .ps__rail-y,
+.ps--focus > .ps__rail-x,
+.ps--focus > .ps__rail-y,
+.ps--scrolling-x > .ps__rail-x,
+.ps--scrolling-y > .ps__rail-y {
+  opacity: 0.6;
+}
+
+.ps .ps__rail-x:hover,
+.ps .ps__rail-y:hover,
+.ps .ps__rail-x:focus,
+.ps .ps__rail-y:focus,
+.ps .ps__rail-x.ps--clicking,
+.ps .ps__rail-y.ps--clicking {
+  background-color: #eee;
+  opacity: 0.9;
+}
+
+/*
+ * Scrollbar thumb styles
+ */
+.ps__thumb-x {
+  background-color: #aaa;
+  border-radius: 6px;
+  transition: background-color .2s linear, height .2s ease-in-out;
+  -webkit-transition: background-color .2s linear, height .2s ease-in-out;
+  height: 6px;
+  /* there must be 'bottom' for ps__thumb-x */
+  bottom: 2px;
+  /* please don't change 'position' */
+  position: absolute;
+}
+
+.ps__thumb-y {
+  background-color: #aaa;
+  border-radius: 6px;
+  transition: background-color .2s linear, width .2s ease-in-out;
+  -webkit-transition: background-color .2s linear, width .2s ease-in-out;
+  width: 6px;
+  /* there must be 'right' for ps__thumb-y */
+  right: 2px;
+  /* please don't change 'position' */
+  position: absolute;
+}
+
+.ps__rail-x:hover > .ps__thumb-x,
+.ps__rail-x:focus > .ps__thumb-x,
+.ps__rail-x.ps--clicking .ps__thumb-x {
+  background-color: #999;
+  height: 11px;
+}
+
+.ps__rail-y:hover > .ps__thumb-y,
+.ps__rail-y:focus > .ps__thumb-y,
+.ps__rail-y.ps--clicking .ps__thumb-y {
+  background-color: #999;
+  width: 11px;
+}
+
+/* MS supports */
+@supports (-ms-overflow-style: none) {
+  .ps {
+    overflow: auto !important;
+  }
+}
+
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+  .ps {
+    overflow: auto !important;
   }
 }

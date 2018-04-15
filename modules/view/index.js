@@ -1,15 +1,18 @@
 const view = Scope.import('galaxy/view');
 const inputs = Scope.import('galaxy/inputs');
+const APIService = Scope.import('services/api-service.js');
 
 const observer = new Galaxy.Observer(inputs);
-observer.on('imageURL', function (value) {
+observer.on('setup', function (newSetup) {
+  const mainView = view.container.node;
+  const url = APIService.getImageURL(newSetup, mainView.offsetWidth, mainView.offsetHeight);
+
   const img = new Image();
   img.onload = function () {
-    Scope.data.imageURL = 'url("' + value + '")';
+    Scope.data.imageURL = 'url("' + url + '")';
     Scope.data.newImage = true;
   };
-  img.src = value;
-
+  img.src = url;
 });
 
 Scope.data.imageURL = null;

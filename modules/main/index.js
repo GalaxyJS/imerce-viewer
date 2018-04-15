@@ -2,6 +2,7 @@
 
 const view = Scope.import('galaxy/view');
 const ProductModel = Scope.import('services/product-model.js');
+const APIService = Scope.import('services/api-service.js');
 const customer = 'bertplantagie';
 const product = 'blake_joni_tara';
 
@@ -11,65 +12,19 @@ Scope.data.errorMessage = null;
 // Scope.data.imageURL = null;
 
 // fetch('https://integrated-configurator-clientapi-accept.3dimerce.mybit.nl/iwc/in3808').then(function (response) {
-fetch('https://integrated-configurator-clientapi-dev.3dimerce.mybit.nl/' + customer + '/' + product).then(function (response) {
+fetch('https://integrated-configurator-clientapi-accept.3dimerce.mybit.nl/' + customer + '/' + product).then(function (response) {
   response.json().then(function (data) {
     Scope.data.productModel.init('in3808', data);
   });
 }).catch(function (error) {
-  Scope.data.errorMessage = 'Sorry! Failed To load data :('
+  Scope.data.errorMessage = 'Sorry! Failed To load data :(';
 });
-
-function verifySetup(setup) {
-  const url = getSetupURL(setup);
-  return fetch(url).then(function (response) {
-    return response.json();
-  });
-}
 
 console.info(Scope.data.productModel);
 
 const refreshView = function () {
 
 };
-
-function queryBuilder(params) {
-  const esc = encodeURIComponent;
-  const query = Object.keys(params)
-    .map(k => esc(k) + '=' + esc(params[k]))
-    .join('&');
-
-  return query;
-}
-
-function getSetupURL(setup) {
-  const path = [customer, product, 'setup'].join('/');
-
-  return getURL(path, setup);
-}
-
-function getImageURL(setup, width, height, extension) {
-  const request = Object.assign({}, setup);
-
-  const query = JSON.stringify(request);
-  const hash = CryptoJS.SHA256(query);
-
-  const pixelRatio = window.devicePixelRatio || 1;
-  const resolution = [width * pixelRatio, height * pixelRatio].join('x');
-
-  const image = [hash, resolution].join('-');
-  const filename = [image, extension || 'jpg'].join('.');
-
-  const path = [customer, product, filename].join('/');
-
-  return getURL(path, request);
-}
-
-function getURL(path, params) {
-  const query = queryBuilder(params);
-  const uri = ['https://integrated-configurator-clientapi-dev.3dimerce.mybit.nl', path].join('/');
-
-  return [uri, query].join('?');
-}
 
 console.info(Scope.data);
 view.config.cleanContainer = true;
@@ -78,13 +33,13 @@ view.init({
   children: [
     {
       tag: 'main',
+      class: 'view-panel',
       children: [
         {
           id: 'main-view',
           class: 'view',
           inputs: {
-            imageURL: '<>data.imageURL',
-            refresh: refreshView
+            setup: '<>data.productModel.setup'
           },
           module: {
             url: 'modules/view/index.js'
@@ -112,6 +67,13 @@ view.init({
         {
           tag: 'section',
           class: 'section-content',
+          lifecycle: {
+            postInsert: function () {
+              // SimpleScrollbar.initEl(this.node);
+              // new SimpleBar(this.node);
+              // const ps = new PerfectScrollbar(this.node);
+            }
+          },
           children: [
             {
               tag: 'h2',
@@ -159,6 +121,7 @@ view.init({
               },
               inputs: {
                 blacklist: '<>data.productModel.blacklist',
+                thumbnail: '<>data.productModel.images.thumbnail',
                 setup: '<>data.productModel.setup',
                 group: '<>data.productModel.activeGroup'
               },
@@ -184,22 +147,22 @@ function groupSelect(event) {
 }
 
 function optionSelect(event) {
-  // Scope.data.productModel.setActiveOptionById(null);
   Scope.data.productModel.setActiveOptionById(event.detail.optionId);
 }
 
 function choiceSelect(event) {
   const newSetup = Object.assign({}, Scope.data.productModel.setup);
   newSetup[event.detail.id] = event.detail.value;
+  Scope.data.productModel.setup[event.detail.id] = event.detail.value;
 
-  verifySetup(newSetup).then(function (data) {
+  APIService.verifySetup(newSetup).then(function (data) {
     Scope.data.productModel.blacklist = data.blacklist;
-
     Scope.data.productModel.setup = data.setup;
-    const mainView = view.container.querySelector('#main-view');
+    Scope.data.productModel.images = data.images;
 
-    const url = getImageURL(newSetup, mainView.offsetWidth, mainView.offsetHeight);
-    Scope.data.imageURL =  url ;
+    // const mainView = view.container.querySelector('#main-view');
+    // const url = APIService.getImageURL(newSetup, mainView.offsetWidth, mainView.offsetHeight);
+    // Scope.data.imageURL = url;
   });
 
 }

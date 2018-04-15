@@ -1,26 +1,46 @@
 /* Galaxy, Galaxy.Scope */
 
+const Animations = Scope.import('/imerce-viewer/services/animations.js');
+const APIService = Scope.import('services/api-service.js');
+const ActiveStateIndicator = Scope.import('services/extras.js');
+
 const inputs = Scope.import('galaxy/inputs');
 const view = Scope.import('galaxy/view');
-const animations = Scope.import('/imerce-viewer/services/animations.js');
-const utils = Scope.import('/imerce-viewer/services/utils.js');
-
-Scope.data.activeOptionId = null;
-Scope.data.setupTimestamp = new Date().getTime();
-
-function isActive(id, value) {
-  return inputs.setup[id] === value;
-}
 
 const observer = new Galaxy.Observer(inputs);
 observer.on('setup', function () {
-  Scope.data.setupTimestamp = new Date().getTime();
+  ActiveStateIndicator.update(Scope);
 });
 
-observer.on('blacklist', function () {
-  arguments;
-  // debugger;
-});
+function broadcastChoiceSelectEvent() {
+  const event = new CustomEvent('choice-select', {
+    detail: {
+      id: 'option:' + this.inputs.optionId,
+      value: this.inputs.choiceId
+    }
+  });
+
+  view.broadcast(event);
+  Scope.data.notifyActiveState = new Date().getTime();
+}
+
+isActiveChoiceItem.watch = ['option.id', 'choice.id', 'inputs.setup'];
+
+function isActiveChoiceItem(optionId, choiceId) {
+  return inputs.setup['option:' + optionId] === choiceId;
+}
+
+getAllowedOptions.watch = ['inputs.group.data'];
+
+function getAllowedOptions(data) {
+  if (data && data.original) {
+    data.params = data.original.filter(function (item) {
+      return !inputs.blacklist.hasOwnProperty('option:' + item.id);
+    });
+  }
+
+  return data;
+}
 
 view.init([
   {
@@ -59,29 +79,7 @@ view.init([
         }
       },
       $for: {
-        data: [
-          'inputs.group.data',
-          function (data) {
-            if (data && data.original) {
-              data.params = data.original.filter(function (item) {
-                return !inputs.blacklist.hasOwnProperty('option:' + item.id);
-              });
-
-              // const newListId = data.params.reduce(function (all, item) {
-              //   return all + item.id;
-              // }, '');
-              //
-              // if (this.data.listId === newListId) {
-              //   console.info('ignore');
-              //   return {};
-              // }
-              //
-              // this.data.listId = newListId;
-            }
-
-            return data;
-          }
-        ],
+        data: getAllowedOptions,
         as: 'option'
       },
       children: [
@@ -92,32 +90,16 @@ view.init([
         {
           tag: 'section',
           children: [
+            ActiveStateIndicator.schema,
             {
-              class: 'choice-item',
-              animations: {
-                config: {
-                  leaveWithParent: true,
-                  enterWithParent: true
-                },
-                enter: {
-                  parent: 'test',
-                  from: {
-                    x: 30,
-                    opacity: 0
-                  },
-                  to: {
-                    x: 0,
-                    opacity: 1
-                  },
-                  duration: .3
-                },
-                leave: {
-                  parent: 'test',
-                  to: {
-                    opacity: 0,
-                    x: -30
-                  },
-                  duration: .3
+              class: {
+                'choice-item': true,
+                active: isActiveChoiceItem
+              },
+              animations: Animations.choiceItemAnimation,
+              lifecycle: {
+                rendered: function () {
+                  ActiveStateIndicator.update(Scope);
                 }
               },
               $for: {
@@ -147,35 +129,36 @@ view.init([
                 ],
                 as: 'choice'
               },
+              inputs: {
+                optionId: '<>option.id',
+                choiceId: '<>choice.id'
+              },
+              on: {
+                click: broadcastChoiceSelectEvent
+              },
               children: [
                 {
-                  tag: 'button',
-                  inputs: {
-                    optionId: '<>option.id',
-                    choiceId: '<>choice.id'
-                  },
-                  class: {
-                    active: [
+                  class: 'icon',
+                  style: {
+                    backgroundImage: [
                       'option.id',
                       'choice.id',
-                      'data.setupTimestamp',
-                      function (optionId, choiceId) {
-                        return isActive('option:' + optionId, choiceId);
+                      function (oid, cid) {
+                        const url = inputs.thumbnail['option:' + oid + '+' + cid];
+                        if (!url) {
+                          return null;
+                        }
+
+                        const width = this.node.offsetWidth || 100;
+                        const height = this.node.offsetHeight || 100;
+                        return 'url("' + APIService.getThumbnailURL(inputs.thumbnail['option:' + oid + '+' + cid], width, height) + '")';
                       }
                     ]
-                  },
-                  text: '<>choice.id',
-                  on: {
-                    click: function () {
-                      const event = new CustomEvent('choice-select', {
-                        detail: {
-                          id: 'option:' + this.inputs.optionId,
-                          value: this.inputs.choiceId
-                        }
-                      });
-                      view.broadcast(event);
-                    }
                   }
+                },
+                {
+                  tag: 'label',
+                  text: '<>choice.id'
                 }
               ]
             }

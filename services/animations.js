@@ -43,5 +43,33 @@ Scope.exports = {
       },
       duration: .2
     }
+  },
+  choiceItemAnimation: {
+    config: {
+      leaveWithParent: true,
+      enterWithParent: true
+    },
+    enter: {
+      parent: 'test',
+      sequence: 'choice-items',
+      from: {
+        x: 20,
+        opacity: 0
+      },
+      to: {
+        x: 0,
+        opacity: 1
+      },
+      position: '-=.15',
+      duration: .3
+    },
+    leave: {
+      parent: 'test',
+      to: {
+        opacity: 0,
+        scale: 0.9
+      },
+      duration: .2
+    }
   }
 };
