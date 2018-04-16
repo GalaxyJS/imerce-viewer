@@ -9,24 +9,10 @@ const product = 'blake_joni_tara';
 Scope.data.productModel = new ProductModel();
 Scope.data.setup = {};
 Scope.data.errorMessage = null;
-// Scope.data.imageURL = null;
-
-// fetch('https://integrated-configurator-clientapi-accept.3dimerce.mybit.nl/iwc/in3808').then(function (response) {
-fetch('https://integrated-configurator-clientapi-accept.3dimerce.mybit.nl/' + customer + '/' + product).then(function (response) {
-  response.json().then(function (data) {
-    Scope.data.productModel.init('in3808', data);
-  });
-}).catch(function (error) {
-  Scope.data.errorMessage = 'Sorry! Failed To load data :(';
-});
 
 console.info(Scope.data.productModel);
-
-const refreshView = function () {
-
-};
-
 console.info(Scope.data);
+
 view.config.cleanContainer = true;
 view.init({
   class: 'interface',
@@ -133,8 +119,16 @@ view.init({
         }
       ]
     }
-
   ]
+});
+view.renderingFlow.nextAction(function () {
+  fetch('https://integrated-configurator-clientapi-accept.3dimerce.mybit.nl/' + customer + '/' + product).then(function (response) {
+    response.json().then(function (data) {
+      Scope.data.productModel.init('in3808', data);
+    });
+  }).catch(function (error) {
+    Scope.data.errorMessage = 'Sorry! Failed To load data :(';
+  });
 });
 
 function groupSelect(event) {
@@ -164,5 +158,4 @@ function choiceSelect(event) {
     // const url = APIService.getImageURL(newSetup, mainView.offsetWidth, mainView.offsetHeight);
     // Scope.data.imageURL = url;
   });
-
 }

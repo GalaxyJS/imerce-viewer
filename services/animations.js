@@ -50,7 +50,7 @@ Scope.exports = {
       enterWithParent: true
     },
     enter: {
-      parent: 'test',
+      parent: 'list-item',
       sequence: 'choice-items',
       from: {
         x: 20,
@@ -64,7 +64,7 @@ Scope.exports = {
       duration: .3
     },
     leave: {
-      parent: 'test',
+      parent: 'list-item',
       to: {
         opacity: 0,
         scale: 0.9

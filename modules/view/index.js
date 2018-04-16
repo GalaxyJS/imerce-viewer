@@ -6,7 +6,6 @@ const observer = new Galaxy.Observer(inputs);
 observer.on('setup', function (newSetup) {
   const mainView = view.container.node;
   const url = APIService.getImageURL(newSetup, mainView.offsetWidth, mainView.offsetHeight);
-
   const img = new Image();
   img.onload = function () {
     Scope.data.imageURL = 'url("' + url + '")';

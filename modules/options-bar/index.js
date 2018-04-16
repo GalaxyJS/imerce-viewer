@@ -12,6 +12,11 @@ observer.on('setup', function () {
   ActiveStateIndicator.update(Scope);
 });
 
+observer.on('thumbnail', function () {
+  // ActiveStateIndicator.update(Scope);
+});
+
+// debugger;
 function broadcastChoiceSelectEvent() {
   const event = new CustomEvent('choice-select', {
     detail: {
@@ -30,16 +35,16 @@ function isActiveChoiceItem(optionId, choiceId) {
   return inputs.setup['option:' + optionId] === choiceId;
 }
 
-getAllowedOptions.watch = ['inputs.group.data'];
+getAllowedOptions.watch = ['inputs.group.data.changes', 'inputs.blacklist'];
 
-function getAllowedOptions(data) {
-  if (data && data.original) {
-    data.params = data.original.filter(function (item) {
-      return !inputs.blacklist.hasOwnProperty('option:' + item.id);
+function getAllowedOptions(changes, blacklist) {
+  if (changes && changes.original) {
+    changes.params = changes.original.filter(function (item) {
+      return !blacklist.hasOwnProperty('option:' + item.id);
     });
   }
 
-  return data;
+  return changes || new Galaxy.View.ArrayChange();
 }
 
 view.init([
@@ -80,7 +85,10 @@ view.init([
       },
       $for: {
         data: getAllowedOptions,
-        as: 'option'
+        as: 'option',
+        trackBy: function (item) {
+          return item.id;
+        }
       },
       children: [
         {
@@ -104,30 +112,32 @@ view.init([
               },
               $for: {
                 data: [
-                  'option.choices',
+                  'option.choices.changes',
                   'option.id',
                   'inputs.blacklist',
-                  function (data, id) {
-                    if (data && data.original) {
-                      data.params = data.original.filter(function (item) {
-                        return !inputs.blacklist.hasOwnProperty('choice:' + id + '+' + item.id);
+                  function (changes, id, blacklist) {
+                    if (changes && changes.original) {
+                      changes.params = changes.original.filter(function (item) {
+                        return !blacklist.hasOwnProperty('choice:' + id + '+' + item.id);
                       });
 
-                      const newListId = data.params.reduce(function (all, item) {
-                        return all + item.id;
-                      }, '');
-
-                      if (this.data.listId === newListId) {
-                        return {};
-                      }
-
-                      this.data.listId = newListId;
+                      // const newListId = changes.params.reduce(function (all, item) {
+                      //   return all + item.id;
+                      // }, ',');
+                      //
+                      // if (this.data.listId === newListId) {
+                      //   return null;
+                      // }
+                      // this.data.listId = newListId;
                     }
 
-                    return data;
+                    return changes;
                   }
                 ],
-                as: 'choice'
+                as: 'choice',
+                trackBy: function (item, index) {
+                  return item ? item.id : index;
+                }
               },
               inputs: {
                 optionId: '<>option.id',
@@ -138,12 +148,17 @@ view.init([
               },
               children: [
                 {
-                  class: 'icon',
+                  class: {
+                    icon: true,
+                    loaded: '<>this.loaded'
+                  },
                   style: {
                     backgroundImage: [
                       'option.id',
                       'choice.id',
                       function (oid, cid) {
+                        const _this = this;
+
                         const url = inputs.thumbnail['option:' + oid + '+' + cid];
                         if (!url) {
                           return null;
@@ -151,7 +166,15 @@ view.init([
 
                         const width = this.node.offsetWidth || 100;
                         const height = this.node.offsetHeight || 100;
-                        return 'url("' + APIService.getThumbnailURL(inputs.thumbnail['option:' + oid + '+' + cid], width, height) + '")';
+                        const iconURL = APIService.getThumbnailURL(inputs.thumbnail['option:' + oid + '+' + cid], width, height);
+
+                        const img = new Image(width, height);
+                        img.onload = function () {
+                          _this.data.loaded = true;
+                        };
+                        img.src = iconURL;
+
+                        return 'url("' + iconURL + '")';
                       }
                     ]
                   }
