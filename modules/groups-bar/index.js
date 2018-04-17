@@ -19,7 +19,7 @@ view.init([
       tag: 'li',
       animations: animations.groupsAnimation,
       $for: {
-        data: '<>inputs.data',
+        data: '<>inputs.data.changes',
         as: 'group'
       },
       children: [

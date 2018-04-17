@@ -9,6 +9,7 @@ const product = 'blake_joni_tara';
 Scope.data.productModel = new ProductModel();
 Scope.data.setup = {};
 Scope.data.errorMessage = null;
+Scope.groupsOrder = [];
 
 console.info(Scope.data.productModel);
 console.info(Scope.data);
@@ -17,6 +18,11 @@ view.config.cleanContainer = true;
 view.init({
   class: 'interface',
   children: [
+    {
+      tag: 'link',
+      rel: 'stylesheet',
+      href: '<>data.spriteSheetURL'
+    },
     {
       tag: 'main',
       class: 'view-panel',
@@ -74,18 +80,21 @@ view.init({
                 enter: {
                   sequence: 'list-item',
                   from: {
-                    x: -20,
+                    y: -20,
                     opacity: 0
                   },
                   to: {
-                    x: 0,
+                    y: 0,
                     opacity: 1
                   },
                   duration: .5
                 },
                 leave: {
+                  parent: 'list-item',
+                  sequence: 'section-title-sequence',
                   to: {
                     height: 0,
+                    opacity: 0,
                     clearProps: 'all'
                   },
                   duration: 1
@@ -109,7 +118,8 @@ view.init({
                 blacklist: '<>data.productModel.blacklist',
                 thumbnail: '<>data.productModel.images.thumbnail',
                 setup: '<>data.productModel.setup',
-                group: '<>data.productModel.activeGroup'
+                group: '<>data.productModel.activeGroup',
+                groupsOrder: '<>data.groupsOrder'
               },
               on: {
                 'choice-select': choiceSelect
@@ -122,9 +132,13 @@ view.init({
   ]
 });
 view.renderingFlow.nextAction(function () {
+  Scope.data.spriteSheetURL = APIService.getSpriteSheetURL(50,50);
   fetch('https://integrated-configurator-clientapi-accept.3dimerce.mybit.nl/' + customer + '/' + product).then(function (response) {
-    response.json().then(function (data) {
-      Scope.data.productModel.init('in3808', data);
+    response.json().then(function (response) {
+      Scope.data.productModel.init('in3808', response);
+      Scope.data.groupsOrder = Scope.data.productModel.groups.map(function (group) {
+        return group.id;
+      });
     });
   }).catch(function (error) {
     Scope.data.errorMessage = 'Sorry! Failed To load data :(';

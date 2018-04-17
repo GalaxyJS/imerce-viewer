@@ -59,6 +59,9 @@ html, body {
   font-size: 16px;
   color: #000; }
 
+body {
+  overflow-y: scroll; }
+
 button {
   background-color: #aaa;
   border: none; }
@@ -67,49 +70,33 @@ button {
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 100%;
-  position: relative; }
+  position: relative;
+  overflow: hidden; }
 
 .view-panel {
   display: block;
   width: calc(60% - 80px);
   height: 100%;
-  position: relative; }
+  position: fixed; }
 
 .control-panel {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  right: 0;
+  position: relative;
+  display: block;
   width: 40%;
   height: 100%;
-  margin: 0;
   padding: 0;
   overflow: hidden;
-  display: flex;
+  margin: 0 0 0 auto;
   flex-direction: column; }
-
-.active-section-title {
-  font-size: 60px;
-  line-height: 66px;
-  text-transform: capitalize;
-  margin: 0;
-  opacity: .9;
-  font-weight: bold;
-  padding: 0 15px;
-  overflow: hidden; }
-
-.section-content {
-  overflow: auto;
-  flex: 1 1 auto; }
-  .section-content > h2:first-child {
-    margin-top: 1.5em; }
 
 .title-items-bar {
   display: flex;
-  flex: 0 0 auto;
   overflow: hidden;
-  height: 100px; }
+  height: 100px;
+  width: 40%;
+  position: fixed;
+  background-color: #fff;
+  z-index: 3; }
   .title-items-bar > ul {
     list-style: none;
     display: flex;
@@ -138,8 +125,26 @@ button {
       .title-items-bar > ul button.active {
         color: rgba(0, 0, 0, 0.9);
         font-size: 26px; }
-  .title-items-bar:last-of-type {
-    border-bottom: none; }
+
+.section-content {
+  overflow: hidden;
+  flex: 1 1 auto;
+  margin: 100px 0 150px;
+  z-index: 1;
+  position: relative; }
+  .section-content > h2:first-child {
+    margin-top: 1.5em; }
+
+.active-section-title {
+  font-size: 60px;
+  line-height: 66px;
+  text-transform: capitalize;
+  margin: 0;
+  opacity: .9;
+  font-weight: bold;
+  padding: 0 15px;
+  overflow: hidden;
+  flex: 1 0 auto; }
 
 .option-item {
   display: block;
@@ -214,6 +219,39 @@ button {
     box-shadow: 0 9px 20px rgba(0, 0, 0, 0.2); }
     .choice-item.active > label {
       opacity: 1; }
+
+.material-item {
+  display: block;
+  padding-bottom: 15px; }
+  .material-item > label {
+    display: block;
+    font-weight: bold; }
+  .material-item > section {
+    display: block;
+    position: relative;
+    margin: 0 -5px; }
+
+.color-item {
+  display: inline-block;
+  width: 56px;
+  height: 56px;
+  position: relative;
+  margin: 2px 2px 0 2px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  overflow: hidden;
+  background-clip: padding-box; }
+  .color-item > .icon {
+    width: 50px;
+    height: 50px;
+    margin: 1px;
+    position: absolute;
+    border-radius: 4px;
+    background-color: #eee; }
+  .color-item.active {
+    border-color: black;
+    box-shadow: 0 5px 19px rgba(0, 0, 0, 0.3); }
 
 .title-items-bar.small-bold > ul button {
   font-size: 14px;

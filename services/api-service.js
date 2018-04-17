@@ -50,5 +50,10 @@ Scope.exports = {
     const parts = permalink.split('.jpg?');
     const url = [parts[0], resolution, '.jpg?', parts[1]].join('');
     return [path, url].join('/');
+  },
+  getSpriteSheetURL: function (width, height) {
+    const resolution = 'spritesheet-' + [width, height].join('x') + '.css';
+    // https://integrated-configurator-clientapi-accept.3dimerce.mybit.nl/bertplantagie/blake_joni_tara/spritesheet-50x50.css
+    return ['https://integrated-configurator-clientapi-accept.3dimerce.mybit.nl', customer, product, resolution].join('/');
   }
 };

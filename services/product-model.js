@@ -59,12 +59,26 @@ ProductModel.prototype.populateAppData = function () {
         }
         group = groupsMap[item.group];
 
+        if (item.materials) {
+          // debugger;
+          item.materials = item.materials.map(function (material) {
+            return _this.getMaterialById(material.id);
+          });
+          // debugger;
+        }
+
         group.data.push(item);
       }
     });
   });
 
   this.groups = groups;
+};
+
+ProductModel.prototype.getMaterialById = function (id) {
+  return this.data.materials.filter(function (material) {
+    return material.id === id;
+  })[0];
 };
 
 ProductModel.prototype.setActiveGroupById = function (id) {
