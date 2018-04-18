@@ -4,30 +4,38 @@ const APIService = Scope.import('services/api-service.js');
 
 const observer = new Galaxy.Observer(inputs);
 observer.on('setup', function (newSetup) {
-  const mainView = view.container.node;
-  const url = APIService.getImageURL(newSetup, mainView.offsetWidth, mainView.offsetHeight);
-  const img = new Image();
-  img.onload = function () {
-    Scope.data.imageURL = 'url("' + url + '")';
-    Scope.data.newImage = true;
-  };
-  img.src = url;
+  renderImage(newSetup);
 });
 
-Scope.data.imageURL = null;
-Scope.data.oldImageURL = null;
-Scope.data.newImage = false;
+function renderImage(newSetup) {
+  Scope.data.newImage = false;
+  const mainView = view.container.node;
+  const url = APIService.getImageURL(newSetup, mainView.offsetWidth, mainView.offsetHeight);
 
-view.init([
-  {
+  if (url === Scope.data.imageURL) {
+    return;
+  }
+
+  const img = new Image();
+  img.onload = function () {
+    Scope.data.imageURL = url;
+    Scope.data.newImage = true;
+    addImage(Scope.data.imageURL);
+  };
+  img.onerror = function (event) {
+    console.error(event)
+  };
+  img.src = url;
+}
+
+let oldNode;
+
+function addImage(url) {
+  if (oldNode) {
+    oldNode.destroy();
+  }
+  oldNode = view.createNode({
     class: 'image',
-    style: {
-      backgroundImage: '<>data.oldImageURL'
-    }
-  },
-  {
-    class: 'image',
-    $if: '<>data.newImage',
     animations: {
       enter: {
         from: {
@@ -35,16 +43,30 @@ view.init([
         },
         to: {
           opacity: 1,
-          onComplete: function () {
-            Scope.data.oldImageURL = Scope.data.imageURL;
-            Scope.data.newImage = false;
-          }
+          clearProps: ''
         },
-        duration: .5
+        duration: .4
+      },
+      leave: {
+        to: {
+          opacity: 1
+        },
+        duration: 1
       }
     },
     style: {
-      backgroundImage: '<>data.imageURL'
+      backgroundImage: 'url("' + url + '")'
     }
+  });
+}
+
+Scope.data.imageURL = null;
+Scope.data.oldImageURL = null;
+Scope.data.newImage = false;
+
+view.init();
+view.renderingFlow.nextAction(function () {
+  if (inputs.setup && Scope.data.imageURL === null) {
+    renderImage(inputs.setup);
   }
-]);
+});

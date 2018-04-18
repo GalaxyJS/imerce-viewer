@@ -20,6 +20,7 @@ itemsAnimation = {
     parent: 'bar',
     sequence: 'list-item',
     from: function (node) {
+      // console.info(node.node.classList.contains('surface'));
       // in the case where no group is selected, then oldGroupIndex and newGroupIndex are the same
       if (oldGroupIndex === null) {
         oldGroupIndex = newGroupIndex;
@@ -47,7 +48,7 @@ itemsAnimation = {
       y: 0,
       opacity: 1
     },
-    position: '-=.24',
+    position: '-=.14',
     chainToParent: true,
     duration: .3
   },
@@ -72,6 +73,8 @@ itemsAnimation = {
       return {
         x: x,
         y: y,
+        // height: 0,
+        // overflow: 'hidden',
         opacity: 0
       }
     },
@@ -84,6 +87,8 @@ itemsAnimation = {
 observer.on('group', function () {
   if (inputs.group) {
     newGroupIndex = inputs.groupsOrder.indexOf(inputs.group.id);
+    // console.info(newGroupIndex, oldGroupIndex, inputs.group.id, inputs.groupsOrder);
+    // debugger;
   } else {
     newGroupIndex = null;
     oldGroupIndex = null;
@@ -185,7 +190,7 @@ view.init([
   {
     tag: 'main',
     lifecycle: {
-      postEnterAnimations: function () {
+      postEnter: function () {
         oldGroupIndex = newGroupIndex;
       }
     },
@@ -220,7 +225,7 @@ view.init([
                 },
                 animations: Animations.choiceItemAnimation,
                 lifecycle: {
-                  rendered: function () {
+                  postEnter: function () {
                     ActiveStateIndicator.update(Scope);
                   }
                 },

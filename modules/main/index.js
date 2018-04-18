@@ -9,7 +9,23 @@ const product = 'blake_joni_tara';
 Scope.data.productModel = new ProductModel();
 Scope.data.setup = {};
 Scope.data.errorMessage = null;
-Scope.groupsOrder = [];
+Scope.data.groupsOrder = [
+  'models',
+  'formations',
+  'dimensions',
+  'finishes',
+  'chassis',
+  'materialtypes',
+  'surfaces',
+  'accessories',
+  'options',
+  'arms',
+  'stitchings',
+  'zippers',
+  'piping',
+  'buttons',
+  'miylabel'
+];
 
 console.info(Scope.data.productModel);
 console.info(Scope.data);
@@ -50,7 +66,8 @@ view.init({
           },
           inputs: {
             data: '<>data.productModel.groups',
-            activeGroup: '<>data.productModel.activeGroup.id'
+            activeGroup: '<>data.productModel.activeGroup.id',
+            groupsOrder: '<>data.groupsOrder'
           },
           on: {
             'group-select': groupSelect
@@ -59,13 +76,6 @@ view.init({
         {
           tag: 'section',
           class: 'section-content',
-          lifecycle: {
-            postInsert: function () {
-              // SimpleScrollbar.initEl(this.node);
-              // new SimpleBar(this.node);
-              // const ps = new PerfectScrollbar(this.node);
-            }
-          },
           children: [
             {
               tag: 'h2',
@@ -132,13 +142,10 @@ view.init({
   ]
 });
 view.renderingFlow.nextAction(function () {
-  Scope.data.spriteSheetURL = APIService.getSpriteSheetURL(50,50);
+  Scope.data.spriteSheetURL = APIService.getSpriteSheetURL(50, 50);
   fetch('https://integrated-configurator-clientapi-accept.3dimerce.mybit.nl/' + customer + '/' + product).then(function (response) {
     response.json().then(function (response) {
       Scope.data.productModel.init('in3808', response);
-      Scope.data.groupsOrder = Scope.data.productModel.groups.map(function (group) {
-        return group.id;
-      });
     });
   }).catch(function (error) {
     Scope.data.errorMessage = 'Sorry! Failed To load data :(';
@@ -158,18 +165,19 @@ function optionSelect(event) {
   Scope.data.productModel.setActiveOptionById(event.detail.optionId);
 }
 
+let requestThrottle;
+
 function choiceSelect(event) {
   const newSetup = Object.assign({}, Scope.data.productModel.setup);
   newSetup[event.detail.id] = event.detail.value;
   Scope.data.productModel.setup[event.detail.id] = event.detail.value;
 
-  APIService.verifySetup(newSetup).then(function (data) {
-    Scope.data.productModel.blacklist = data.blacklist;
-    Scope.data.productModel.setup = data.setup;
-    Scope.data.productModel.images = data.images;
-
-    // const mainView = view.container.querySelector('#main-view');
-    // const url = APIService.getImageURL(newSetup, mainView.offsetWidth, mainView.offsetHeight);
-    // Scope.data.imageURL = url;
-  });
+  clearTimeout(requestThrottle);
+  requestThrottle = setTimeout(function () {
+    APIService.verifySetup(newSetup).then(function (data) {
+      Scope.data.productModel.blacklist = data.blacklist;
+      Scope.data.productModel.setup = data.setup;
+      Scope.data.productModel.images = data.images;
+    });
+  }, 100);
 }
