@@ -9,8 +9,6 @@ const exclusionList = [
   'cameras'
 ];
 
-Scope.data.activeGroupId = null;
-
 getOrderedGroups.watch = ['inputs.data.changes', 'inputs.groupsOrder'];
 
 function getOrderedGroups(changes, groupsOrder) {
@@ -70,12 +68,13 @@ view.init([
           },
           on: {
             click: function () {
-              Scope.data.activeGroupId = this.inputs.groupId;
+              const groupId = this.inputs.groupId;
+              // Scope.data.activeGroupId = this.inputs.groupId;
 
               const event = new CustomEvent('group-select', {
                 // bubbles: true,
                 detail: {
-                  groupId: Scope.data.activeGroupId
+                  groupId: groupId
                 }
               });
               view.broadcast(event);
