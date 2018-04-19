@@ -1,116 +1,99 @@
-var apimer = Scope.import('services/apimer.js');
-var Observable = Scope.import('services/observable.js');
+Scope.exports = ProductModel;
 
-Scope.export = ProductModel;
+function ProductModel() {
+  this.activeGroup = null;
+  this.activeOption = null;
+  this.activeChoice = {};
+  this.activeCamera = {};
+  this.groupsSubject = {};
+  this.blacklistSubject = {};
+  this.camerasSubject = {};
 
-function ProductModel(id) {
-  var _this = this;
-  this.id = id;
-  this.data = [];
-  this.types = [];
-  this.parts = new Observable();
-  this.surfaces = new Observable();
-  this.setup = new Observable();
-  this.imageURL = new Observable();
+  this.setupSubject = {};
+  this.data = {};
+  this.blacklist = {};
+  this.setup = {};
+  this.images = {};
+  this.uiTypeOverwrites = {};
+  this.uiHierarchyConfig = [];
+  this.groupsActiveOption = {};
+  this.productId = null;
 
-  this.refresh();
+  this.groups = [];
 }
 
-ProductModel.prototype.init = function (response) {
-  this.data = response ? response.productData : {
-    data: []
-  };
+ProductModel.prototype.init = function (productId, data) {
+  this.productId = productId;
+  this.blacklist = data.blacklist;
+  this.setup = data.setup;
+  this.images = data.images;
+  this.data = data.data;
 
-
-  var dna = this.data.data[0];
-  this.types = this.extractAllTypes();
-
-  debugger;
-  // this.initParts();
-  // this.initSurfaces();
-  //
-  // this.setSetup(this._data.data.default);
+  this.populateAppData();
 };
 
-ProductModel.prototype.extractAllTypes = function () {
-  var _this = this;
-  var data = _this.data.data[0];
-  var types = types = [];
+ProductModel.prototype.update = function (data) {
 
-  data.data.forEach(function (item) {
-    if (types.indexOf(item.type) === -1) {
-      types.push(item.type);
-    }
+};
+
+ProductModel.prototype.populateAppData = function () {
+  const _this = this;
+  const keys = Object.keys(this.data);
+  const groups = [];
+  const groupsMap = {};
+
+  keys.forEach(function (key) {
+    let part = _this.data[key];
+
+    let group = {};
+    part.forEach(function (item) {
+      if (item.hasOwnProperty('group')) {
+        if (!groupsMap.hasOwnProperty(item.group)) {
+          let g = groupsMap[item.group] = {
+            id: item.group,
+            data: [],
+            ui: {}
+          };
+
+          groups.push(g);
+        }
+        group = groupsMap[item.group];
+
+        if (item.materials) {
+          // debugger;
+          item.materials = item.materials.map(function (material) {
+            return _this.getMaterialById(material.id);
+          });
+          // debugger;
+        }
+
+        group.data.push(item);
+      }
+    });
   });
 
-  return types;
+  this.groups = groups;
 };
 
-ProductModel.prototype.getNodesByType = function (type) {
-  var _this = this;
-  var data = _this.data.data[0];
-  var nodes = [];
-
-  nodes = data.data.filter(function (item) {
-    return item.type === type;
-  });
+ProductModel.prototype.getMaterialById = function (id) {
+  return this.data.materials.filter(function (material) {
+    return material.id === id;
+  })[0];
 };
 
-ProductModel.prototype.refresh = function () {
-  apimer.getProduct(this.id).then(this.init.bind(this));
+ProductModel.prototype.setActiveGroupById = function (id) {
+  this.activeGroup = this.groups.filter(function (group) {
+    return group.id === id;
+  })[0] || null;
 };
 
-ProductModel.prototype.activeItem = function (part, subPart, noRender) {
-  var _this = this;
-  var relationships = [];
-
-  if (part.type === 'surfaces') {
-    relationships = part.relationships.materials.data;
-  } else if (part.type === 'materials') {
-    relationships = part.relationships.colors.data;
-  } else {
-    relationships = part.relationships.choices.data;
+ProductModel.prototype.setActiveOptionById = function (id) {
+  if (!this.activeGroup || !this.activeGroup.data) {
+    return;
   }
 
-  relationships.forEach(function (relation) {
-    relation.selected = false;
-    if (relation.id === subPart.id) {
-      relation.selected = true;
-    }
-  });
-
-  if (noRender) return;
-
-  var setup = this.generateSetupObject(this.parts.data);
-
-  this.surfaces.data.forEach(function (surface) {
-    var materials = _this.getSubParts(surface);
-    var colors = _this.getSubParts(materials.selected);
-    if (colors.selected) {
-      setup[surface.id + '||' + colors.selected.id] = true;
-    }
-  });
-
-  this.setSetup(setup);
+  this.activeOption = this.activeGroup.data.filter(function (group) {
+    return group.id === id;
+  })[0] || null;
 };
 
-ProductModel.prototype.generateSetupObject = function (parts) {
-  var _this = this;
-  var setup = {};
-
-  parts.forEach(function (part) {
-    var subPart = _this.getSubParts(part);
-    setup[subPart.selected.id] = true;
-  });
-
-  return setup;
-};
-
-ProductModel.prototype.setSetup = function (setup) {
-  var _this = this;
-  _this.setup = setup;
-
-  apimer.renderProduct(_this.id, _this.setup).then(function (response) {
-    // _this.imageURL.set(response[ 0 ] || null);
-  });
-};
