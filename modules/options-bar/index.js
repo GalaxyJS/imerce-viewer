@@ -32,6 +32,7 @@ itemsAnimation = {
         x = -38;
       }
 
+      // when the same group has been selected, go down
       if (newGroupIndex === oldGroupIndex) {
         x = 0;
         y = -38;
@@ -65,6 +66,7 @@ itemsAnimation = {
         x = 38;
       }
 
+      // when the same group has been selected, then go up
       if (newGroupIndex === oldGroupIndex) {
         x = 0;
         y = -38;
@@ -87,8 +89,7 @@ itemsAnimation = {
 observer.on('group', function () {
   if (inputs.group) {
     newGroupIndex = inputs.groupsOrder.indexOf(inputs.group.id);
-    // console.info(newGroupIndex, oldGroupIndex, inputs.group.id, inputs.groupsOrder);
-    // debugger;
+
   } else {
     newGroupIndex = null;
     oldGroupIndex = null;
@@ -125,15 +126,15 @@ function getAllowedOptions(changes, blacklist) {
 
     changes.params = params.filter(function (item) {
       return item.hasOwnProperty('choices');
-    })
+    });
   }
 
   return changes || new Galaxy.View.ArrayChange();
 }
 
-getAllowChoices.watch = ['option.choices.changes', 'option.id', 'inputs.blacklist'];
+getAllowedChoices.watch = ['option.choices.changes', 'option.id', 'inputs.blacklist'];
 
-function getAllowChoices(changes, optionId, blacklist) {
+function getAllowedChoices(changes, optionId, blacklist) {
   if (changes && changes.original) {
     changes.params = changes.original.filter(function (item) {
       return !blacklist.hasOwnProperty('choice:' + optionId + '+' + item.id);
@@ -192,6 +193,12 @@ view.init([
     lifecycle: {
       postEnter: function () {
         oldGroupIndex = newGroupIndex;
+        inputs.navConfig.lock = false;
+      },
+      postLeave: function () {
+        if (!inputs.group) {
+          inputs.navConfig.lock = false;
+        }
       }
     },
     children: [
@@ -230,7 +237,7 @@ view.init([
                   }
                 },
                 $for: {
-                  data: getAllowChoices,
+                  data: getAllowedChoices,
                   as: 'choice',
                   trackBy: trackById
                 },

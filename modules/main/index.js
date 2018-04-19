@@ -30,6 +30,10 @@ Scope.data.groupsOrder = [
 console.info(Scope.data.productModel);
 console.info(Scope.data);
 
+Scope.data.navConfig = {
+  lock: false
+};
+
 view.config.cleanContainer = true;
 view.init({
   class: 'interface',
@@ -129,7 +133,8 @@ view.init({
                 thumbnail: '<>data.productModel.images.thumbnail',
                 setup: '<>data.productModel.setup',
                 group: '<>data.productModel.activeGroup',
-                groupsOrder: '<>data.groupsOrder'
+                groupsOrder: '<>data.groupsOrder',
+                navConfig: '<>data.navConfig'
               },
               on: {
                 'choice-select': choiceSelect
@@ -153,6 +158,12 @@ view.renderingFlow.nextAction(function () {
 });
 
 function groupSelect(event) {
+  if (Scope.data.navConfig.lock) {
+    return;
+  }
+
+  Scope.data.navConfig.lock = true;
+
   const activeGroup = Scope.data.productModel.activeGroup;
   if (activeGroup && activeGroup.id === event.detail.groupId) {
     Scope.data.productModel.setActiveGroupById(null);
